@@ -1,0 +1,18 @@
+package edu.upc.eetac.dsa.grouptalk.dao;
+
+import edu.upc.eetac.dsa.grouptalk.entity.Answer;
+import edu.upc.eetac.dsa.grouptalk.entity.AnswerCollection;
+
+import java.sql.SQLException;
+
+/**
+ * Created by juan on 26/10/15.
+ */
+public interface AnswerDAO {
+    public Answer createAnswer(String userid, String themeid, String content) throws SQLException;
+    public Answer getAnswerById(String id) throws SQLException;
+    public AnswerCollection getAnswersByThemeId(String themeid) throws SQLException;
+    public Answer updateAnswer(String id, String content) throws SQLException;
+    public boolean deleteAnswer(String id) throws SQLException;
+
+}

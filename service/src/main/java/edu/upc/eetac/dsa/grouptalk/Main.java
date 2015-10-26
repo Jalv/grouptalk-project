@@ -9,6 +9,7 @@ import java.net.URI;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
+
 /**
  * Main class.
  *
@@ -18,8 +19,6 @@ public class Main {
     // Base URI the Grizzly HTTP server will listen on
     private static String baseURI;
 
-
-
     public final static String getBaseURI() {
         if (baseURI == null) {
             PropertyResourceBundle prb = (PropertyResourceBundle) ResourceBundle.getBundle("grouptalk");
@@ -27,13 +26,14 @@ public class Main {
         }
         return baseURI;
     }
+
     /**
      * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application.
      * @return Grizzly HTTP server.
      */
     public static HttpServer startServer() {
         // create a resource config that scans for JAX-RS resources and providers
-        // in edu.upc.eetac.dsa.beeter package
+        // in edu.upc.eetac.dsa.grouptalk package
         final ResourceConfig rc = new GrouptalkResourceConfig();
 
         // create and start a new instance of grizzly http server
@@ -51,7 +51,7 @@ public class Main {
         System.out.println(String.format("Jersey app started with WADL available at "
                 + "%sapplication.wadl\nHit enter to stop it...", getBaseURI()));
         System.in.read();
-        server.stop();
+        server.shutdownNow();
     }
 }
 
