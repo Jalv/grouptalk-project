@@ -1,6 +1,7 @@
 package edu.upc.eetac.dsa.grouptalk.dao;
 
 import edu.upc.eetac.dsa.grouptalk.entity.Group;
+import edu.upc.eetac.dsa.grouptalk.entity.GroupCollection;
 
 import java.sql.SQLException;
 
@@ -10,6 +11,8 @@ import java.sql.SQLException;
 public interface GroupDAO {
 
     public Group createGroup(String name) throws SQLException, GroupAlreadyExistsException;
+
+    public GroupCollection getGroups() throws SQLException;
 
     public Group getGroupById(String id) throws SQLException;
 

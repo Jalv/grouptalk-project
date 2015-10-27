@@ -5,6 +5,7 @@ package edu.upc.eetac.dsa.grouptalk.dao;
  */
 public interface GroupDAOQuery {
     public final static String UUID = "select REPLACE(UUID(),'-','')";
+    public final static String GET_GROUPS = "select hex(id) as id, name from groups";
     public final static String CREATE_GROUP = "insert into groups (id, name) values (UNHEX(?), ?);";
     public final static String GET_GROUP_BY_ID = "select hex(g.id) as id, g.name from groups g where id=unhex(?)";
     public final static String GET_GROUP_BY_NAME = "select hex(g.id) as id, g.name from groups g where g.name=?";

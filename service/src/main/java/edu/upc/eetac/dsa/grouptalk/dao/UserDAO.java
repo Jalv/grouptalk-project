@@ -14,6 +14,8 @@ public interface UserDAO {
 
     public User getUserByLoginid(String loginid) throws SQLException;
 
+    public boolean subscribeUserToGroup(String userid,String groupid) throws SQLException, UserAlreadySubscribedException;
+
     public boolean deleteUser(String id) throws SQLException;
 
     public boolean checkPassword(String id, String password) throws SQLException;

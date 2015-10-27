@@ -196,4 +196,40 @@ public class UserDAOImpl implements UserDAO {
             if (connection != null) connection.close();
         }
     }
+
+    @Override
+    public boolean subscribeUserToGroup(String userid, String groupid) throws SQLException, UserAlreadySubscribedException {
+
+        Connection connection = null;
+        PreparedStatement stmt = null;
+
+        try {
+            boolean isSubcribed = checkUser(userid, groupid);
+            if (isSubcribed== true)
+                throw new UserAlreadySubscribedException();
+
+            connection = Database.getConnection();
+
+            stmt = connection.prepareStatement(UserDAOQuery.SUBSCRIBE_GROUP);
+            stmt.setString(1, userid);
+            stmt.setString(2, groupid);
+            stmt.executeUpdate();
+
+            stmt.close();
+
+            connection.commit();
+            return true;
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            if (stmt != null) stmt.close();
+            if (connection != null) {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
+        }
+
+    }
+
+
 }

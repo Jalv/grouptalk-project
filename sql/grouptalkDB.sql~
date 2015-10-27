@@ -27,7 +27,7 @@ CREATE TABLE user_roles (
     userid BINARY(16) NOT NULL,
     role VARCHAR(15) NOT NULL,
     FOREIGN KEY (userid) REFERENCES users(id) on delete cascade,
-    PRIMARY KEY (userid, role)
+    PRIMARY KEY (userid, rolename)
 );
 
 CREATE TABLE auth_tokens (

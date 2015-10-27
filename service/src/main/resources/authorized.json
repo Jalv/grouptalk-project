@@ -10,5 +10,12 @@
   {
     "path": "(?i)users/([0-9a-f]{32})?",
     "methods": ["GET"]
+  },
+  {
+    "path": "groups",
+    "methods": ["GET"]
   }
+
+
+
 ]
