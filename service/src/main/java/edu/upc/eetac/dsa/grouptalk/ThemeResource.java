@@ -66,19 +66,7 @@ public class ThemeResource {
         return theme;
     }
 
-    @GET
-    @Produces(GrouptalkMediaType.GROUPTALK_THEME_COLLECTION)
-    public ThemeCollection getThemes() {
-        ThemeCollection themes = null;
-        try {
-            themes = (new ThemeDAOImpl().getThemes());
-        } catch (SQLException e) {
-            throw new InternalServerErrorException(e.getMessage());
-        }
-        if (themes == null)
-            throw new NotFoundException("No themes found");
-        return themes;
-    }
+
 
     @Path("/{userid}/{namegroup}")
     @GET
@@ -107,6 +95,8 @@ public class ThemeResource {
             throw new NotFoundException("No themes found");
         return themes;
     }
+
+
 
 
 
