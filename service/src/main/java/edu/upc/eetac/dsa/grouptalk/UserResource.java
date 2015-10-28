@@ -1,10 +1,9 @@
 package edu.upc.eetac.dsa.grouptalk;
 
 import edu.upc.eetac.dsa.grouptalk.auth.AuthTokenDAOImpl;
-import edu.upc.eetac.dsa.grouptalk.dao.UserAlreadyExistsException;
-import edu.upc.eetac.dsa.grouptalk.dao.UserDAO;
-import edu.upc.eetac.dsa.grouptalk.dao.UserDAOImpl;
+import edu.upc.eetac.dsa.grouptalk.dao.*;
 import edu.upc.eetac.dsa.grouptalk.entity.AuthToken;
+import edu.upc.eetac.dsa.grouptalk.entity.Group;
 import edu.upc.eetac.dsa.grouptalk.entity.User;
 
 import javax.ws.rs.*;
@@ -14,7 +13,7 @@ import java.net.URISyntaxException;
 import java.sql.SQLException;
 
 /**
- * Created by juan on 26/10/15.
+ * Created by juan on 25/10/15.
  */
 @Path("users")
 public class UserResource {
@@ -39,7 +38,6 @@ public class UserResource {
         return Response.created(uri).type(GrouptalkMediaType.GROUPTALK_AUTH_TOKEN).entity(authenticationToken).build();
     }
 
-
     @Path("/{id}")
     @GET
     @Produces(GrouptalkMediaType.GROUPTALK_USER)
@@ -59,18 +57,62 @@ public class UserResource {
     private SecurityContext securityContext;
     @Path("/{id}")
     @DELETE
-    public void deleteUser(@PathParam("id") String id) {
+    public void deleteUser(@PathParam("id") String id){
         String userid = securityContext.getUserPrincipal().getName();
-        if (!userid.equals(id))
+        if(!userid.equals(id))
             throw new ForbiddenException("operation not allowed");
         UserDAO userDAO = new UserDAOImpl();
         try {
-            if (!userDAO.deleteUser(id))
-                throw new NotFoundException("User with id = " + id + " doesn't exist");
+            if(!userDAO.deleteUser(id))
+                throw new NotFoundException("User with id = "+id+" doesn't exist");
         } catch (SQLException e) {
             throw new InternalServerErrorException();
         }
     }
 
+    @Path("/{id}/{namegroup}")
+    @POST
+    public void suscribe(@PathParam("id") String id, @PathParam("namegroup") String namegroup){
+        String userid = securityContext.getUserPrincipal().getName();
+        if(!userid.equals(id))
+            throw new ForbiddenException("operation not allowed");
+        GroupDAO groupDAO = new GroupDAOImpl();
+        Group group;
+        try{
+            group = groupDAO.getGroupByName(namegroup);
+        }catch (SQLException e) {
+            throw new InternalServerErrorException();
+        }
+        UserDAO userDAO = new UserDAOImpl();
+        try {
+            userDAO.subscribetoGroup(id, group.getId());
+        } catch (SQLException e) {
+            throw new InternalServerErrorException();
+        } catch (UserAlreadySubscribedException e) {
+            e.printStackTrace();
+        }
+    }
 
+    @Path("/{id}/{namegroup}")
+    @DELETE
+    public void unsuscribe(@PathParam("id") String id, @PathParam("namegroup") String namegroup){
+        String userid = securityContext.getUserPrincipal().getName();
+        if(!userid.equals(id))
+            throw new ForbiddenException("operation not allowed");
+        GroupDAO groupDAO = new GroupDAOImpl();
+        Group group;
+        try{
+            group = groupDAO.getGroupByName(namegroup);
+        }catch (SQLException e) {
+            throw new InternalServerErrorException();
+        }
+            UserDAO userDAO = new UserDAOImpl();
+        try {
+            userDAO.leaveGroup(userid, group.getId());
+        } catch (SQLException e) {
+            throw new InternalServerErrorException();
+        } catch (UserDidntSubscribedException e) {
+            throw new ForbiddenException("NOP");
+        }
+    }
 }

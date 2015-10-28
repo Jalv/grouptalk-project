@@ -19,6 +19,7 @@ import java.util.List;
 /**
  * Created by juan on 26/10/15.
  */
+
 @Provider
 @Priority(Priorities.AUTHENTICATION)
 public class AuthRequestFilter implements ContainerRequestFilter {

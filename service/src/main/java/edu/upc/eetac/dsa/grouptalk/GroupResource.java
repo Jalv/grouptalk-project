@@ -19,7 +19,6 @@ import java.sql.SQLException;
 public class GroupResource {
     @Context
     private SecurityContext securityContext;
-
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public void registerGroup(@FormParam("name") String name, @Context UriInfo uriInfo) throws URISyntaxException {
@@ -39,22 +38,9 @@ public class GroupResource {
             URI uri = new URI(uriInfo.getAbsolutePath().toString() + "/" + group.getId());
         }
         else
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+         throw new WebApplicationException(Response.Status.UNAUTHORIZED);
     }
 
-    @GET
-    @Produces(GrouptalkMediaType.GROUPTALK_GROUP_COLLECTION)
-    public GroupCollection getGroups() {
-        GroupCollection groups = null;
-        try {
-            groups = (new GroupDAOImpl()).getGroups();
-        } catch (SQLException e) {
-            throw new InternalServerErrorException(e.getMessage());
-        }
-        if (groups == null)
-            throw new NotFoundException("No groups created");
-        return groups;
-    }
 
     @Path("/{id}")
     @GET
@@ -71,8 +57,19 @@ public class GroupResource {
         return group;
     }
 
-
-
+    @GET
+    @Produces(GrouptalkMediaType.GROUPTALK_GROUP_COLLECTION)
+    public GroupCollection getGroups() {
+        GroupCollection groups = null;
+        try {
+            groups = (new GroupDAOImpl()).getGroups();
+        } catch (SQLException e) {
+            throw new InternalServerErrorException(e.getMessage());
+        }
+        if (groups == null)
+            throw new NotFoundException("No groups created");
+        return groups;
+    }
 
     @Path("/{id}")
     @DELETE

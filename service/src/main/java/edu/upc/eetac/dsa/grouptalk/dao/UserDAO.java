@@ -5,7 +5,7 @@ import edu.upc.eetac.dsa.grouptalk.entity.User;
 import java.sql.SQLException;
 
 /**
- * Created by juan on 26/10/15.
+ * Created by juan on 24/10/15.
  */
 public interface UserDAO {
     public User createUser(String loginid, String password) throws SQLException, UserAlreadyExistsException;
@@ -14,9 +14,11 @@ public interface UserDAO {
 
     public User getUserByLoginid(String loginid) throws SQLException;
 
-    public boolean subscribeUserToGroup(String userid,String groupid) throws SQLException, UserAlreadySubscribedException;
-
     public boolean deleteUser(String id) throws SQLException;
+
+    public boolean subscribetoGroup(String id, String groupid) throws SQLException, UserAlreadySubscribedException;
+
+    public boolean leaveGroup(String id, String groupid) throws SQLException, UserDidntSubscribedException;
 
     public boolean checkPassword(String id, String password) throws SQLException;
 

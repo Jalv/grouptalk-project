@@ -1,7 +1,7 @@
 package edu.upc.eetac.dsa.grouptalk.dao;
 
 /**
- * Created by juan on 26/10/15.
+ * Created by juan on 24/10/15.
  */
 public interface UserDAOQuery {
     public final static String UUID = "select REPLACE(UUID(),'-','')";
@@ -11,7 +11,7 @@ public interface UserDAOQuery {
     public final static String GET_USER_BY_USERNAME = "select hex(u.id) as id, u.loginid as loginid from users u where u.loginid=?";
     public final static String DELETE_USER = "delete from users where id=unhex(?)";
     public final static String GET_PASSWORD =  "select hex(password) as password from users where id=unhex(?)";
-    public final static String COMPARE_USER_GROUP =  "select ";
-    public final static String SUBSCRIBE_GROUP = "insert into user_group (userid,groupid) values (UNHEX(?),UNHEX(?))";
+    public final static String COMPARE_USER_GROUP =  "select hex(groupid) as groupid from user_group where userid=UNHEX(?) and groupid=UNHEX(?)";
+    public final static String SUBSCRIBE_GROUP = "insert into user_group (userid, groupid) values (UNHEX(?), UNHEX(?))";
     public final static String UNSUBSCRIBE_GROUP = "delete from user_group where userid=unhex(?) and groupid=unhex(?)";
 }
