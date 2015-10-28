@@ -96,6 +96,51 @@ public class ThemeResource {
         return themes;
     }
 
+    @Path("/{id}")
+    @PUT
+    @Consumes(GrouptalkMediaType.GROUPTALK_THEME)
+    @Produces(GrouptalkMediaType.GROUPTALK_THEME)
+    public Theme updateUSting(@PathParam("id") String id, Theme theme) {
+        if(theme == null)
+            throw new BadRequestException("entity is null");
+        if(!id.equals(theme.getId()))
+            throw new BadRequestException("path parameter id and entity parameter id doesn't match");
+
+        String userid = securityContext.getUserPrincipal().getName();
+        if(!userid.equals(theme.getUserid()))
+            throw new ForbiddenException("operation not allowed");
+
+        ThemeDAO themeDAO = new ThemeDAOImpl();
+        try {
+            theme = themeDAO.updateTheme(id, theme.getContent());
+            if(theme == null)
+                throw new NotFoundException("theme with id = "+id+" doesn't exist");
+        } catch (SQLException e) {
+            throw new InternalServerErrorException();
+        }
+        return theme;
+    }
+
+    @Path("/{id}")
+    @DELETE
+    public void deleteTheme(@PathParam("id") String id) {
+        String userid = securityContext.getUserPrincipal().getName();
+        ThemeDAO themeDAO = new ThemeDAOImpl();
+        try {
+            String ownerid = themeDAO.getThemeById(id).getUserid();
+            if(!userid.equals(ownerid))
+                throw new ForbiddenException("operation not allowed");
+            if(!themeDAO.deleteTheme(id))
+                throw new NotFoundException("Sting with id = "+id+" doesn't exist");
+        } catch (SQLException e) {
+            throw new InternalServerErrorException();
+        } catch (UserDidntSubscribedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
 
 
 

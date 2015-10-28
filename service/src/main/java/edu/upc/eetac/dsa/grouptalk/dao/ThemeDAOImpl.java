@@ -179,7 +179,7 @@ public class ThemeDAOImpl implements ThemeDAO {
     }
 
     @Override
-    public Theme updateTheme(String id, String subject, String content) throws SQLException{
+    public Theme updateTheme(String id, String content) throws SQLException{
         Theme theme = null;
 
         Connection connection = null;
@@ -188,7 +188,6 @@ public class ThemeDAOImpl implements ThemeDAO {
             connection = Database.getConnection();
 
             stmt = connection.prepareStatement(ThemeDAOQuery.UPDATE_THEME);
-            stmt.setString(1, subject);
             stmt.setString(2, content);
             stmt.setString(3, id);
 
