@@ -9,10 +9,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * Created by juan on 26/10/15.
+ * Created by juan on 24/10/15.
  */
 public class ThemeDAOImpl implements ThemeDAO {
-
+   
     @Override
     public Theme createTheme(String userid, String groupid, String subject, String content) throws SQLException, UserDidntSubscribedException {
         Connection connection = null;
@@ -61,11 +61,8 @@ public class ThemeDAOImpl implements ThemeDAO {
     public Theme getThemeById(String id) throws SQLException, UserDidntSubscribedException {
         Theme theme = null;
 
-
         Connection connection = null;
         PreparedStatement stmt = null;
-
-
 
         try {
             connection = Database.getConnection();
@@ -96,6 +93,41 @@ public class ThemeDAOImpl implements ThemeDAO {
             throw new UserDidntSubscribedException();
         return theme;
     }
+
+    @Override
+    public Theme getThemeByName(String name) throws SQLException, UserDidntSubscribedException {
+        Theme theme = null;
+
+        Connection connection = null;
+        PreparedStatement stmt = null;
+
+        try {
+            connection = Database.getConnection();
+
+            stmt = connection.prepareStatement(ThemeDAOQuery.GET_THEME_BY_NAME);
+            stmt.setString(1, name);
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                theme = new Theme();
+                System.out.println(rs.getString("id"));
+                theme.setId(rs.getString("id"));
+                theme.setUserid(rs.getString("userid"));
+                theme.setGroupid(rs.getString("groupid"));
+                theme.setSubject(rs.getString("subject"));
+                theme.setContent(rs.getString("content"));
+                theme.setCreationTimestamp(rs.getTimestamp("creation_timestamp").getTime());
+                theme.setLastModified(rs.getTimestamp("last_modified").getTime());
+            }
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            if (stmt != null) stmt.close();
+            if (connection != null) connection.close();
+        }
+        return theme;
+    }
+
 
     @Override
     public ThemeCollection getThemes() throws SQLException{

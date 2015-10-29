@@ -2,6 +2,7 @@ package edu.upc.eetac.dsa.grouptalk.dao;
 
 import edu.upc.eetac.dsa.grouptalk.entity.Answer;
 import edu.upc.eetac.dsa.grouptalk.entity.AnswerCollection;
+import edu.upc.eetac.dsa.grouptalk.entity.Theme;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,11 +10,22 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * Created by juan on 26/10/15.
+ * Created by juan on 25/10/15.
  */
 public class AnswerDAOImpl implements AnswerDAO{
     @Override
     public Answer createAnswer(String userid, String themeid, String content) throws SQLException{
+
+        try {
+            Theme t = new ThemeDAOImpl().getThemeById(themeid);
+            boolean isInGroup = checkUser(userid, t.getGroupid());
+            System.out.println("Esta en el grupo?" +isInGroup);
+            if (isInGroup != true)
+                throw new UserDidntSubscribedException();
+        } catch (UserDidntSubscribedException e) {
+            e.printStackTrace();
+        }
+
         Connection connection = null;
         PreparedStatement stmt = null;
         String id = null;
@@ -26,13 +38,14 @@ public class AnswerDAOImpl implements AnswerDAO{
                 id = rs.getString(1);
             else
                 throw new SQLException();
-
+            System.out.println("paso UUID");
             stmt = connection.prepareStatement(AnswerDAOQuery.CREATE_ANSWER);
             stmt.setString(1, id);
             stmt.setString(2, userid);
-            stmt.setString(2, themeid);
-            stmt.setString(5, content);
+            stmt.setString(3, themeid);
+            stmt.setString(4, content);
             stmt.executeUpdate();
+            System.out.println("PASO CREATE ANSWERS");
         } catch (SQLException e) {
             throw e;
         } finally {
@@ -42,6 +55,7 @@ public class AnswerDAOImpl implements AnswerDAO{
                 connection.close();
             }
         }
+        System.out.println("llega al return final");
         return getAnswerById(id);
     }
 
@@ -83,6 +97,7 @@ public class AnswerDAOImpl implements AnswerDAO{
         Connection connection = null;
         PreparedStatement stmt = null;
         try {
+            System.out.println("Try de getAnswerById");
             connection = Database.getConnection();
             stmt = connection.prepareStatement(AnswerDAOQuery.GET_ANSWERS_BY_THEMEID);
             stmt.setString(1, themeid);
@@ -92,6 +107,7 @@ public class AnswerDAOImpl implements AnswerDAO{
             while (rs.next()) {
                 Answer answer = new Answer();
                 answer.setId(rs.getString("id"));
+                System.out.println(rs.getString("id"));
                 answer.setUserid(rs.getString("userid"));
                 answer.setThemeid(rs.getString("themeid"));
                 answer.setContent(rs.getString("content"));
@@ -127,6 +143,7 @@ public class AnswerDAOImpl implements AnswerDAO{
             stmt.setString(2, id);
 
             int rows = stmt.executeUpdate();
+            System.out.println("Rows=" + rows);
             if (rows == 1)
                 answer = getAnswerById(id);
         } catch (SQLException e) {
@@ -157,5 +174,40 @@ public class AnswerDAOImpl implements AnswerDAO{
             if (stmt != null) stmt.close();
             if (connection != null) connection.close();
         }
+    }
+
+
+    @Override
+    public boolean checkUser(String id, String groupid) throws SQLException{
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        boolean a=false;
+        System.out.println(groupid);
+        System.out.println(id);
+        try {
+            connection = Database.getConnection();
+
+            stmt = connection.prepareStatement(UserDAOQuery.COMPARE_USER_GROUP);
+
+            stmt.setString(2, groupid);
+            stmt.setString(1, id);
+
+
+
+            ResultSet rs = stmt.executeQuery();
+
+            if(rs.next()) a=true;
+
+            //String resultado = rs.getString("groupid");
+
+
+
+        }catch (SQLException e) {
+            throw e;
+        } finally {
+            if (stmt != null) stmt.close();
+            if (connection != null) connection.close();
+        }
+        return a;
     }
 }
