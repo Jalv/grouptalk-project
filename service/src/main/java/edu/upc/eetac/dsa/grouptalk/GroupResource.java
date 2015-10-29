@@ -46,6 +46,7 @@ public class GroupResource {
     @GET
     @Produces(GrouptalkMediaType.GROUPTALK_USER)
     public Group getGroup(@PathParam("id") String id) {
+
         Group group = null;
         try {
             group = (new GroupDAOImpl()).getGroupById(id);

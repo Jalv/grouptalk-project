@@ -54,8 +54,9 @@ public class AnswerResource {
     @Path("/{nametheme}")
     @GET
     @Produces(GrouptalkMediaType.GROUPTALK_ANSWER_COLLECTION)
-    public AnswerCollection getAnswersByNameTheme(@PathParam("nametheme") String nametheme) {
-
+    public Response getAnswersByNameTheme(@PathParam("nametheme") String nametheme, @Context Request request) {
+        // Create cache-control
+        CacheControl cacheControl = new CacheControl();
         ThemeDAO themeDAO = new ThemeDAOImpl();
         Theme theme = null;
         try{
@@ -69,12 +70,27 @@ public class AnswerResource {
         try {
             System.out.println("\n\n\n");
             answers = (new AnswerDAOImpl().getAnswersByThemeId(theme.getId()));
+
+            // Calculate the ETag on last modified date of user resource
+            EntityTag eTag = new EntityTag(Long.toString(answers.getNewestTimestamp()));
+
+            // Verify if it matched with etag available in http request
+            Response.ResponseBuilder rb = request.evaluatePreconditions(eTag);
+
+            // If ETag matches the rb will be non-null;
+            // Use the rb to return the response without any further processing
+            if (rb != null) {
+                return rb.cacheControl(cacheControl).tag(eTag).build();
+            }
+
+            // If rb is null then either it is first time request; or resource is
+            // modified
+            // Get the updated representation and return with Etag attached to it
+            rb = Response.ok(answers).cacheControl(cacheControl).tag(eTag);
+            return rb.build();
         } catch (SQLException e) {
             throw new InternalServerErrorException(e.getMessage());
         }
-        if (answers == null)
-            throw new NotFoundException("No themes found");
-        return answers;
     }
 
     @Path("/{id}")
