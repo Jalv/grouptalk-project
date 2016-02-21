@@ -20,7 +20,17 @@ public class MyResourceTest {
      */
     @Test
     public void test_demo(){
-        assertEquals("Test correcto en jenkins","Test correcto en jenkins2");
+        assertEquals("Test correcto en jenkins","Test correcto en jenkins");
+    }
+
+    @Test
+    public void test_demo2(){
+        assertEquals("Test correcto en jenkins2","Test correcto en jenkins");
+    }
+
+    @Test
+    public void test_demo3(){
+        assertEquals("Test correcto en jenkins3","Test correcto en jenkins3");
     }
 
 
